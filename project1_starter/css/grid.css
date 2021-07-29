@@ -1,0 +1,74 @@
+.container {
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 20px;
+  padding-left: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -(20px/2);
+  margin-right: -(20px/2);
+}
+.col,
+[class^="col-"],
+[class*=" col-"] {
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 20px/2;
+  padding-left: 20px/2;
+  flex-basis: 0;
+  flex-grow: 1;
+  max-width: 100%;
+}
+.col-12 {
+  flex: 0 0 12*100%/12;
+  max-width: 12*100%/12;
+}
+.col-11 {
+  flex: 0 0 11*100%/12;
+  max-width: 11*100%/12;
+}
+.col-10 {
+  flex: 0 0 10*100%/12;
+  max-width: 10*100%/12;
+}
+.col-9 {
+  flex: 0 0 9*100%/12;
+  max-width: 9*100%/12;
+}
+.col-8 {
+  flex: 0 0 8*100%/12;
+  max-width: 8*100%/12;
+}
+.col-7 {
+  flex: 0 0 7*100%/12;
+  max-width: 7*100%/12;
+}
+.col-6 {
+  flex: 0 0 6*100%/12;
+  max-width: 6*100%/12;
+}
+.col-5 {
+  flex: 0 0 5*100%/12;
+  max-width: 5*100%/12;
+}
+.col-4 {
+  flex: 0 0 4*100%/12;
+  max-width: 4*100%/12;
+}
+.col-3 {
+  flex: 0 0 3*100%/12;
+  max-width: 3*100%/12;
+}
+.col-2 {
+  flex: 0 0 2*100%/12;
+  max-width: 2*100%/12;
+}
+.col-1 {
+  flex: 0 0 1*100%/12;
+  max-width: 1*100%/12;
+}
