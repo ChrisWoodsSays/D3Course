@@ -204,5 +204,6 @@ function createBubbleChart(data) {
             .attr('x',  Math.sqrt(bubblesAreaScale(1.5) / Math.PI) + 70)
             .attr('y', 2 * Math.sqrt(bubblesAreaScale(1.5) / Math.PI) - 2 * Math.sqrt(bubblesAreaScale(0.1) / Math.PI) + 10)
             .text('0.1M');
+
   }
 

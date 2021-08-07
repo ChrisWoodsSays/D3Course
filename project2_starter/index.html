@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Interactive Data Visualization with D3.js - Project 2</title>
+	<link rel="stylesheet" type="text/css" href="css/grid.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+	<div class="container">
+		<h1>The gender pay gap in sports</h1>
+		<div class="row">
+			<div class="col-8">
+				<div class="intro">How bad is the gender pay gap in professional sport? In which sports do women and men have a similar remuneration? And which ones still have an enormous difference? For this visualization, we took a look at the earnings of the top 20 male and female professional players for 2019 in three sports: Basketball, Golf and Tennis. Only the money earned on tour (for golf and tennis) or as a salary (for basketball) has been taken into account, leaving aside endorsement deals.</div>
+			</div>
+		</div>
+		<div id="viz"></div>
+		<div class="tooltip">
+			<div class="name"></div>
+			<div class="home"></div>
+			<div class="earnings">Salary: <span class="salary"></span></div>
+		</div>
+
+		<!-- Add source -->
+		<div class="source">
+			<div class="label">Sources:</div>
+			<ul>
+				<li><a href="https://www.lpga.com/players/jin-young-ko/98455/results?filters=2019&archive=">LPGA Tour Results 2019</a></li>
+				<li><a href="https://www.pgatour.com/content/pgatour/stats/stat.186.y2019.html">PGA Tour Results 2019</a></li>
+				<li><a href="https://www.bball-index.com/2019-season-preview-top-25-players-in-the-wnba/">2019 Season preview: Top 25 players in the WNBA</a></li>
+				<li><a href="https://www.cbssports.com/nba/news/top-100-nba-players-for-2019-20-lebron-james-edges-kawhi-leonard-for-no-1-zion-williamson-only-rookie-to-make-the-cut/">Top 100 NBA players for 2019-20</a></li>
+				<li><a href="https://www.spotrac.com">Spotrac</a></li>
+				<li><a href="https://www.wtatennis.com/rankings/singles">WTA Tour - Singles Rankings</a> Top players on 2019-12-30</li>
+				<li><a href="https://www.atptour.com/en/rankings/singles">ATP Tour - Singles Rankings</a> Top players on 2019-12-30</li>
+				<li><a href="https://www.espn.com/">ESPN</a></li>
+			</ul>
+		</div>
+	</div>
+	
+
+	<!-- Add Scripts Here -->
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+	<script src="js/histogram.js"></script>
+	<!-- <script src="js/gender-gap.js"></script> -->
+</body>
+</html>
