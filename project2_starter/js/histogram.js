@@ -7,7 +7,7 @@ const color = 'steelblue';
 d3.csv('./data/pay_by_gender_tennis.csv').then(data => {
     //console.log(data);
     createHistogram(data);
-  });
+});
 
 function createHistogram(data) {
 
