@@ -142,6 +142,57 @@ createViz = (data) => {
       .attr('fill', d => d.gender === 'women' ? colorWomen : colorMen)
       .attr('fill-opacity', 0.8)
       .attr('stroke', 'none');
+
+  // Add circles for each player
+  const circlesRadius = 2.5;
+  const circlesPadding = 0.7;
+  tennisDataMen = data;//.filter(d => d.gender == "men" && d.sport == "tennis")
+  const simulation = d3.forceSimulation(tennisDataMen)
+    .force('forceX', d3.forceX(margin.left + (0 * spaceBetweenSports)).strength(0.1))
+    .force('forceY', d3.forceY(d => yScale(d.earnings_USD_2019)).strength(10))
+    .force('collide', d3.forceCollide(circlesRadius + circlesPadding))
+    // if x is left of violin centre then change velocity to positive (moving to the right)
+    .force('axis', () => {
+      data.forEach(datum => {
+        if (datum.gender == "men" && datum.x < (margin.left)) {
+            datum.vx += 0.01 * datum.x;
+          } else 
+          if (datum.gender == "women" && datum.x > (margin.left)) {
+            datum.vx -= 0.01 * datum.x;
+        }
+        if (datum.y > (height - margin.bottom)) {
+          datum.vy -= 0.01 * datum.y;
+        }
+      });
+    })
+    .stop();
+
+  const numIterations = 300;
+  for (let i = 0; i < numIterations; i++) {
+    simulation.tick();
+  }
+  simulation.stop();
+
+  // Add Circles
+  svg
+    .append('g')
+      .attr('class', 'circles-group')
+    .selectAll('.circle')
+    .data(tennisDataMen)
+    .join('circle')
+      .attr('r', d => circlesRadius)
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
+      .attr('fill', d => d.gender == "men"?colorMenCircles:colorWomenCircles)
+      // Now transform each sport to its own place
+      .attr('transform', d => {
+        const index = sports.indexOf(d.sport) + 1;
+        const translationX = index * spaceBetweenSports;
+        return `translate(${translationX}, 0)`; // The margin.left part of the translation is applied in the areaGenerator functions to avoid negative x values for women
+      })
+
+
+
 };
 
     
