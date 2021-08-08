@@ -146,9 +146,11 @@ createViz = (data) => {
   // Add circles for each player
   const circlesRadius = 2.5;
   const circlesPadding = 0.7;
-  tennisDataMen = data;//.filter(d => d.gender == "men" && d.sport == "tennis")
-  const simulation = d3.forceSimulation(tennisDataMen)
-    .force('forceX', d3.forceX(margin.left + (0 * spaceBetweenSports)).strength(0.1))
+  tennisDataMen = data;
+  const simulation = d3.forceSimulation(data)
+    // Place them around the margin as we'll transform this to the specific sport x position
+    // on the circle append later
+    .force('forceX', d3.forceX(margin.left).strength(0.1))
     .force('forceY', d3.forceY(d => yScale(d.earnings_USD_2019)).strength(10))
     .force('collide', d3.forceCollide(circlesRadius + circlesPadding))
     // if x is left of violin centre then change velocity to positive (moving to the right)
@@ -167,6 +169,7 @@ createViz = (data) => {
     })
     .stop();
 
+  // Run for 300 ticks (not until is cools) to get a good enough set of positions
   const numIterations = 300;
   for (let i = 0; i < numIterations; i++) {
     simulation.tick();
@@ -184,15 +187,12 @@ createViz = (data) => {
       .attr('cx', d => d.x)
       .attr('cy', d => d.y)
       .attr('fill', d => d.gender == "men"?colorMenCircles:colorWomenCircles)
-      // Now transform each sport to its own place
+      // Now transform each sport to its own place on the x axis
       .attr('transform', d => {
         const index = sports.indexOf(d.sport) + 1;
         const translationX = index * spaceBetweenSports;
-        return `translate(${translationX}, 0)`; // The margin.left part of the translation is applied in the areaGenerator functions to avoid negative x values for women
+        return `translate(${translationX}, 0)`; 
       })
-
-
-
 };
 
     
