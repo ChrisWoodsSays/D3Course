@@ -141,7 +141,8 @@ createViz = (data) => {
       })
       .attr('fill', d => d.gender === 'women' ? colorWomen : colorMen)
       .attr('fill-opacity', 0.8)
-      .attr('stroke', 'none');
+      .attr('stroke', 'none')
+      .style("filter", "url(#glow)");
 
   // Add circles for each player
   const circlesRadius = 2.5;
@@ -193,6 +194,89 @@ createViz = (data) => {
         const translationX = index * spaceBetweenSports;
         return `translate(${translationX}, 0)`; 
       })
+
+  // Add tooltip    
+  d3.selectAll('circle')
+      .on('mouseover', (event, d) => {
+        handleMouseOver(event, d);
+      })
+      .on('mouseout',  d => handleMouseOut());
+
+  const tooltip = d3.select('.tooltip');
+
+  function handleMouseOver(e, d) {
+    //  Call and populate the tooltip
+
+    // Populate tooltip information
+    tooltip.select('.name').text(d.name);
+    tooltip.select('.home').text(d.country);
+    tooltip.select('.earnings .salary').text(d3.format('~s')(d.earnings_USD_2019));
+    
+    // Position and reveal tooltip
+    tooltip
+      .style('top', `${e.pageY + 20}px`)
+      .style('left', `${e.pageX + 20}px`)
+      // turn a class on and off without affecting the other classes that this element might have
+      .classed('visible', true);
+  }
+
+  function handleMouseOut() {
+    // Hide tooltip
+    tooltip
+      .classed('visible', false);
+  }
+
+  // Add legend
+  const legendWidth = 30;
+  const legendHeight = 15;
+  const legend = svg
+    .append('g')
+      .attr('class', 'legend-group')
+      .attr('transform', `translate(${margin.left + 30}, ${margin.top + 10})`);
+  legend
+    .append('rect')
+      .attr('y', 0)
+      .attr('width', legendWidth)
+      .attr('height', legendHeight)
+      .attr('fill', colorWomen);
+  legend
+    .append('rect')
+      .attr('y', legendHeight + 5)
+      .attr('width', legendWidth)
+      .attr('height', legendHeight)
+      .attr('fill', colorMen);
+  legend
+    .append('text')
+      .attr('x', legendWidth + 7)
+      .attr('y', 12)
+      .style('font-size', '14px')
+      .text('Women');
+  legend
+    .append('text')
+      .attr('x', legendWidth + 7)
+      .attr('y', legendHeight + 18)
+      .style('font-size', '14px')
+      .text('Men');
+
+  // Append container for the glow effect: defs
+  const defs = svg.append('defs');
+
+  // Add filter for the glow effect
+  const filter = defs
+     .append('filter')
+        .attr('id', 'glow');
+  filter
+     .append('feGaussianBlur')
+        .attr('stdDeviation', '3.5')
+        .attr('result', 'coloredBlur');
+  const feMerge = filter
+     .append('feMerge');
+  feMerge.append('feMergeNode')
+     .attr('in', 'coloredBlur');
+  feMerge.append('feMergeNode')
+     .attr('in', 'SourceGraphic');
+
+
 };
 
     
