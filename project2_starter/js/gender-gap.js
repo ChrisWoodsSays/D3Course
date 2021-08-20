@@ -55,19 +55,19 @@ createViz = (data) => {
       .attr('width', width)
       .attr('height', height);
 
-    // Create Scales
-    const maxEarnings = d3.max(data, d => d.earnings_USD_2019)
-    const binsMaxLength = d3.max(bins.map(bin => bin.bins), d => d.length);  
-    console.log(binsMaxLength)
-  
-    const xScale = d3.scaleLinear()
-      .domain([0, binsMaxLength])
-      .range([0, widthPerHalfViolin]);
-    // Create Linear Y Earnings Scale
-    const yScale = d3.scaleLinear()
-      .domain([0, maxEarnings + 5000000])
-      .range([height - margin.bottom, margin.top])
-      .nice();
+  // Create Scales
+  const maxEarnings = d3.max(data, d => d.earnings_USD_2019)
+  const binsMaxLength = d3.max(bins.map(bin => bin.bins), d => d.length);  
+  console.log(binsMaxLength)
+
+  const xScale = d3.scaleLinear()
+    .domain([0, binsMaxLength])
+    .range([0, widthPerHalfViolin]);
+  // Create Linear Y Earnings Scale
+  const yScale = d3.scaleLinear()
+    .domain([0, maxEarnings + 5000000])
+    .range([height - margin.bottom, margin.top])
+    .nice();
 
   // Create X Sports Axis
   const spaceBetweenSports = (width - margin.left - margin.right) / (sports.length + 1);
@@ -95,7 +95,7 @@ createViz = (data) => {
   // Create Y Earnings Axis
   const yAxis = d3.axisLeft(yScale)
 
-  // Create xAxis Group at BOTTOM of chaty
+  // Create yAxis Group 
   const yAxisGroup = svg
       .append('g')
           .attr('class', 'y-axis-group')
