@@ -29,6 +29,7 @@ createViz = (data, groups) => {
     svg = vizDiv
         .append('svg')
             .attr('viewbox', [0, 0, width, height])
+            //.attr('viewbox', `0, 0, ${width}, ${height}`)
             .attr('width', width)
             .attr('height', height);
     
@@ -38,7 +39,7 @@ createViz = (data, groups) => {
         .data(groups)
         .join('g')
             .attr('class', d => d.group_id + '/' + d.group_name)
-            .attr('transform', `translate(${outerCircleRadius + margin.left}, ${outerCircleRadius + margin.top})`);
+            .attr('transform', `translate(${outerCircleRadius + margin.left}, ${outerCircleRadius})`);
 
     // Declare arc generator with variables that won't change
     const arcThickness = 5;
@@ -80,7 +81,8 @@ createViz = (data, groups) => {
           .attr('fill', '#6794AD');
 
 
-    //Create an SVG text element and append a textPath element
+    // Add year labels
+    // Create an SVG text element and append a textPath element
     groupWrappers
         .append("text")
             .attr('class', 'group-year')
@@ -98,8 +100,118 @@ createViz = (data, groups) => {
                   })
                 .text(d => d.year !== 0 ? d.year : 'Payload specialists');
 
-}
+    // Add Flight Time Lines
+    // =====================
+    const flightTimeScale = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.space_flight_total_hours)])
+        .range([0, 300]);
 
+    const astronautsGroup = groupWrappers
+        .append('g')
+            .attr('class', d => `astronauts-group astronauts-group-${d.group_id}`);
+    
+    // Remove the padding between each group for the space available around the circle then divide by the number of astronauts
+    const correctedAnglePerAstronaut = (360 - arcPadding * (groups.length + 1)) / data.length;
+
+    // Append the astronaut flight time lines
+    const astronautsFlightTime = astronautsGroup
+        .append('g')
+            .attr('class', d => `astronauts-flight-time astronauts-flight-time-${d.group_id}`)
+        .selectAll('.astronaut-flight-time')
+        .data(d => d.astronauts)
+        .join('line')
+            .attr('class', d => `astronaut-flight-time astronaut-flight-time-${d.id}`)
+            .attr('x1', (d, i) => {
+                const groupStartAngle = groups.find(group => group.group_id === d.group).startAngle;
+                // Store the angle and position of each line to avoid recalculating them for the interactions
+                d['angle'] = degreesToRadians(groupStartAngle - arcPadding/2 + (i+1)*correctedAnglePerAstronaut);
+                d['lineX1'] = innerCircleRadius * Math.sin(d.angle);
+                return d.lineX1;
+            })
+            .attr('y1', d => {
+                d['lineY1'] = -1 * (innerCircleRadius * Math.cos(d.angle)); // Multiply by -1 to take into account the negative direction of the y-coordinate
+                return d.lineY1;
+            })
+            .attr('x2', d => {
+                d['lineX2'] = (innerCircleRadius + flightTimeScale(d.space_flight_total_hours)) * Math.sin(d.angle);
+                return d.lineX2;
+            })
+            .attr('y2', d => {
+                d['lineY2'] = -1 * ((innerCircleRadius + flightTimeScale(d.space_flight_total_hours)) * Math.cos(d.angle));
+                return d.lineY2;
+            })
+            .attr('stroke', d => d.military_rank.length > 0 ? '#718493' : '#B6D4D0'); // colour based on whether military or not
+
+// Add Spacewalk Time Circles
+// ==========================
+const spaceWalkTimeScale = d3.scaleLinear()
+    .domain([0, d3.max(data, d => d.space_walks_total_hours)])
+    .range([0, Math.PI * Math.pow(20, 2)]);
+
+// Append the astronauts circles, representing the total time in space walk
+const astronautsSpaceWalkTime = astronautsGroup
+    .append('g')
+        .attr('class', d => `astronauts-spacewalk-time astronauts-spacewalk-time-${d.group_id}`)
+    .selectAll('.astronaut-spacewalk-time')
+    .data(d => d.astronauts) // For simplicity, append a circle for each astronauts, because we'll need the index to calcultate the position
+    .join('circle')
+        .attr('class', d => `astronaut-spacewalk-time astronaut-spacewalk-time-${d.id}`)
+        .attr('cx', d => {
+            d['circleCx'] = d.lineX2;
+            return d.circleCx;
+        })
+        .attr('cy', d => {
+            d['circleCy'] = d.lineY2;
+            return d.circleCy;
+        })
+        .attr('r', d => {
+            d['circleRadius'] = Math.sqrt(spaceWalkTimeScale(d.space_walks_total_hours) / Math.PI);
+            return d.circleRadius;
+        })
+        .attr('fill', d => d.military_rank.length > 0 ? '#718493' : '#B6D4D0')
+        .attr('fill-opacity', d => d.military_rank.length > 0 ? 0.3 : 0.45)
+        .attr('stroke', 'none');
+
+// Add Death in Service Stars
+// ==========================
+const fatalMissions = svg
+    .append('g')
+    .attr('g', 'fatal-missions');
+
+const starDistance = 50;
+const starSize = 20;
+groups.forEach(group => {
+    const astronautsWithFatalMission = group.astronauts.filter(astronaut => astronaut.death_mission !== '');
+    const groupHasFatalMission = astronautsWithFatalMission.length > 0 ? true : false;
+    if (groupHasFatalMission) {
+        fatalMissions
+            .append('g')
+            .attr('class', d => `group-fatal-missions group-fatal-missions-${group.group_id}`)
+            .selectAll('.fatal-mission')
+            .data(astronautsWithFatalMission)
+            .join('image')
+            .attr('class', d => `fatal-mission fatal-mission-astronaut-${d.id}`)
+            .attr('xlink:href', d => {
+                switch (d.death_mission) {
+                    case 'Apollo 1':
+                        return 'assets/star_yellow.svg';
+                    case 'STS 51-L (Challenger)':
+                        return 'assets/star_green.svg';
+                    case 'STS-107 (Columbia)':
+                        return 'assets/star_red.svg';
+                }
+            })
+            .attr('width', `${starSize}px`)
+            .attr('height', `${starSize}px`)
+            .attr('transform', d => {
+                // Rotate around center, then translate to 12:00 (the operation order in counter-intuitive, need to explain)
+                d['starTransform'] = `rotate(${radiansToDegrees(d.angle)}, ${outerCircleRadius + margin.left}, ${outerCircleRadius}) translate(${(outerCircleRadius + margin.left - starSize/2)}, ${(outerCircleRadius - starSize/2) - innerCircleRadius - starDistance})`;
+                return d.starTransform;
+            })
+            .attr('opacity', '0.6');
+    }
+});
+}
   
   // Get Unique Groups with their list of Astronauts
   const getGroups = (data) => {
