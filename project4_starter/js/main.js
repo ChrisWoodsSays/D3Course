@@ -211,6 +211,54 @@ groups.forEach(group => {
             .attr('opacity', '0.6');
     }
 });
+
+// Add Legend for Total Time in Space
+// ==================================
+const flightTimeLegend = d3.select('.legend-section.flight-time')
+    .append('ul')
+    .selectAll('.flight-time-legend-item')
+    .data([1000, 5000, 10000])
+    .join('li') // create li elements with class, style and data
+        .attr('class', 'flight-time-legend-item')
+        .style('display', 'flex')
+        .style('align-items', 'center');
+flightTimeLegend
+    .append('span') // add span to each li using its data.  Note we're styling the span rather than using a line
+        .attr('class', 'flight-time-line')
+        .style('width', d => `${flightTimeScale(d)}px`)
+        .style('height', '1px')
+        .style('background-color', '#90BBBD');
+flightTimeLegend
+    .append('span') // add span to each li using its data
+        .attr('class', 'flight-time-label')
+        .style('margin-left', '10px')
+        .text(d => `${d.toLocaleString()}h`); // Use locale to add comma thousand separators
+
+// Add Legend Total Space Walk Time
+// ================================
+const spaceWalkTimeLegend = d3.select('.legend-section.time-in-spacewalk')
+    .append('ul')
+    .selectAll('.flight-time-legend-item')
+    .data([20, 40, 60])
+    .join('li') // create li elements with class, style and data
+        .attr('class', 'flight-time-legend-item')
+        .style('display', 'flex')
+        .style('align-items', 'center');
+spaceWalkTimeLegend
+    .append('span') // Note we're styling the span rather than using a d3 circle
+        .attr('class', 'space-walk-time-circle')
+        .style('width', d => `${2 * Math.sqrt(spaceWalkTimeScale(d) / Math.PI)}px`)
+        .style('height', d => `${2 * Math.sqrt(spaceWalkTimeScale(d) / Math.PI)}px`)
+        .style('margin-left', d => `${30 - Math.sqrt(spaceWalkTimeScale(d) / Math.PI)}px`) // adjust left margin so that circles still line up in there centres
+        .style('background-color', '#718493')
+        .style('opacity', 0.3)
+        .style('border-radius', '50%');
+spaceWalkTimeLegend
+    .append('span') // add span to each li using its data
+        .attr('class', 'space-walk-time-label')
+        .style('margin-left', d => `${30 - Math.sqrt(spaceWalkTimeScale(d) / Math.PI)}px`) // adjust left margin so that labels (which follow circles) still line up
+        .text(d => `${d}h`);
+
 }
   
   // Get Unique Groups with their list of Astronauts
